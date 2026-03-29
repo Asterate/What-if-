@@ -1,17 +1,17 @@
-# whatif
+# "what if?" project
 
-A new Flutter project.
+Idea is to make a simple app inspired by a book "what if?". It would display at chosen frequency a silly question and when you tap on it you see an answer like Anki cards. I am planning to make for this version just set in stone questions which will not be updated just for demo purposes. I will be using local storage.
 
-## Getting Started
+## Project structure
 
-This project is a starting point for a Flutter application.
+The project will have 3 files:
+- main file for app antry point
+- Home page file for the main view
+- questions file for the content
 
-A few resources to get you started if this is your first Flutter project:
+## Plan
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Get more familiar with Flutter
+3. Make the questions
+4. Design home page
+5. Finalize entry point
