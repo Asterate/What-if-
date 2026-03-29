@@ -1,5 +1,8 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'questions.dart';
+import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,19 +14,51 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool _revealed = false;
+  bool _timer = false;
+  DateTime? _nextQuestionTime;
+  Duration _timeRemaining = Duration.zero;
+  Timer? _countdownTimer;
+
+ void save_timestamp() async {
+  _nextQuestionTime = DateTime.now().add(const Duration(hours: 6));
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setInt('timestamp', _nextQuestionTime!.millisecondsSinceEpoch);
+  }
+
+  void _startCountdown() {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final remaining = _nextQuestionTime!.difference(DateTime.now());
+      if (remaining.isNegative) {
+        timer.cancel();
+        setState((){
+          _timeRemaining = Duration.zero;
+          _timer = false;
+        });
+      } else {
+        setState(() {
+          _timeRemaining = remaining;
+        });
+      }
+    });
+  }
 
   void _nextQuestion() {
     setState(() {
-      _currentIndex = (_currentIndex + 1) % questions.length;
+      _currentIndex = Random().nextInt(questions.length);
       _revealed = false;
+      _timer = false;
     });
   }
 
   void _reveal() {
     setState(() {
       _revealed = true;
+      _timer = true;
     });
+    save_timestamp();
+    _startCountdown();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +106,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Text('Reveal Answer'),
                 ),
               const SizedBox(height: 40),
-              if (_revealed)
+              if (_revealed && _timer)
+                Column(
+                  children: [
+                    const Text(
+                      'Next question in',
+                      style: TextStyle(color: Colors.white54, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${_timeRemaining.inHours}h ${_timeRemaining.inMinutes.remainder(60)}m ${_timeRemaining.inSeconds.remainder(60)}s',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                )
+              else if (_revealed)
                 TextButton(
                   onPressed: _nextQuestion,
                   child: const Text(
